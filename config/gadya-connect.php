@@ -28,6 +28,18 @@ return [
     'gate' => null,
 
     /*
+     * One-click sign-in for the Gadya team. The portal's pass signs its
+     * bearer in as this account, created the first time it is used. The
+     * role is written only when the users table has a role column; null
+     * uses Gadya CMS's administrator role.
+     */
+    'sso' => [
+        'name' => 'Gadya Support',
+        'email' => env('GADYA_CONNECT_SSO_EMAIL', 'support@gadya.media'),
+        'role' => null,
+    ],
+
+    /*
      * Where people can write when the site cannot reach the portal.
      */
     'help_address' => env('GADYA_CONNECT_HELP_ADDRESS', 'help@support.gadya.media'),

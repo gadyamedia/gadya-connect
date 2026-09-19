@@ -27,6 +27,7 @@ class GadyaConnectServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
         /*
          * The check-in rides the site's own scheduler: if the scheduler
