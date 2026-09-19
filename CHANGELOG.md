@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+- The **Get help** button links to its own panel's page and appears only on that panel. On a site with a second Filament panel without Get help (a client area, a second brand), it no longer points at a route that does not exist there.
+
 ## 0.4.0
 
 - **Get help on sites without Filament**: plain pages at `/gadya-connect/help` for anyone signed in, the same requests, screenshots and conversation as the admin page. On by default only when Filament is not installed (`help_page`: `auto`, `true` or `false`).

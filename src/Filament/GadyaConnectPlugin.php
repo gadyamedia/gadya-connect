@@ -3,6 +3,7 @@
 namespace Gadya\Connect\Filament;
 
 use Filament\Contracts\Plugin;
+use Filament\Facades\Filament;
 use Filament\Panel;
 use Filament\View\PanelsRenderHook;
 use Gadya\Connect\Filament\Pages\GadyaSupport;
@@ -39,6 +40,19 @@ class GadyaConnectPlugin implements Plugin
      */
     public static function addHelpButton(Panel $panel): void
     {
-        $panel->renderHook(PanelsRenderHook::USER_MENU_BEFORE, fn (): string => view('gadya-connect::filament.help-button', ['url' => GetHelp::getUrl()])->render());
+        /*
+         * The link is built for this panel by name: a site with a second
+         * panel that has no Get help page must not get a button pointing
+         * at a route that does not exist there.
+         */
+        $panelId = $panel->getId();
+
+        $panel->renderHook(PanelsRenderHook::USER_MENU_BEFORE, function () use ($panelId): string {
+            if (Filament::getCurrentPanel()?->getId() !== $panelId) {
+                return '';
+            }
+
+            return view('gadya-connect::filament.help-button', ['url' => GetHelp::getUrl(panel: $panelId)])->render();
+        });
     }
 }
