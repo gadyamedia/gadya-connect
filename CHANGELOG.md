@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+- **Get help on sites without Filament**: plain pages at `/gadya-connect/help` for anyone signed in, the same requests, screenshots and conversation as the admin page. On by default only when Filament is not installed (`help_page`: `auto`, `true` or `false`).
+
 ## 0.3.0
 
 - **One-click sign-in for the Gadya team.** The portal hands over a pass signed with the site's secret, good once, for one minute; `/gadya-connect/sso` signs the bearer in as the site's own **Gadya Support** account (created on first use, with Gadya CMS's administrator role where there is one). The client switches it off under Gadya Support; every sign-in is logged, and recorded in Gadya CMS's activity log.

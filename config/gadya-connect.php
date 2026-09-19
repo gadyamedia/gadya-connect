@@ -40,6 +40,13 @@ return [
     ],
 
     /*
+     * A plain Get help page at /gadya-connect/help for sites without
+     * Filament, for anyone signed in. "auto" turns it on only when Filament
+     * is not installed (Filament sites have the admin page instead).
+     */
+    'help_page' => env('GADYA_CONNECT_HELP_PAGE', 'auto'),
+
+    /*
      * Where people can write when the site cannot reach the portal.
      */
     'help_address' => env('GADYA_CONNECT_HELP_ADDRESS', 'help@support.gadya.media'),

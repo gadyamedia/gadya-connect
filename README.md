@@ -30,7 +30,7 @@ The pairing code comes from the portal (**Sites → Connect a site**). It works 
 
 - PHP 8.3+, Laravel 11, 12 or 13
 - The scheduler running (`* * * * * php artisan schedule:run`), which sends the check-ins
-- Filament 4 or 5 for the admin page (optional)
+- Filament 4 or 5 for the admin pages (optional: without Filament, Get help is a plain page at `/gadya-connect/help` for signed-in users)
 
 ## On a Filament site without Gadya CMS
 
