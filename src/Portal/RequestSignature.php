@@ -4,7 +4,8 @@ namespace Gadya\Connect\Portal;
 
 /**
  * The signature every request to the portal carries: an HMAC of when it was
- * sent, a one-off nonce, the method, the path and a hash of the body, keyed
+ * sent, a one-off nonce, the method, the path with its query string and a
+ * hash of the body, keyed
  * with the secret the portal handed over at pairing. The portal
  * (App\Support\Connect\RequestSignature) checks exactly this.
  */

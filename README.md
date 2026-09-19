@@ -12,6 +12,7 @@ Connects a Laravel site to the [Gadya Media](https://gadya.media) portal at app.
 
   If the check-ins stop, the portal notices: that usually means the scheduler has stopped.
 - **Nothing to open up.** The site talks to the portal; the portal never reaches into the site. Every request is signed with a secret handed over once at pairing, stamped with the time, and never accepted twice.
+- **Get help** in the Filament admin, for everyone who can sign in: ask the Gadya team for help with screenshots attached, see each request's status, and carry on the conversation. Replies also arrive by email, and answering the email works too.
 - **Gadya Support page** in the Filament admin. From there you connect the site with a pairing code, check in on demand, and decide whether the Gadya team may sign in to help.
 
 Gadya CMS 0.5 and later include it; on any other Laravel 11–13 site:

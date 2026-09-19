@@ -28,6 +28,11 @@ return [
     'gate' => null,
 
     /*
+     * Where people can write when the site cannot reach the portal.
+     */
+    'help_address' => env('GADYA_CONNECT_HELP_ADDRESS', 'help@support.gadya.media'),
+
+    /*
      * Seconds to wait for the portal before giving up on a check-in.
      */
     'timeout' => 15,
