@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2
+
+- The check-in carries a **quality** section on a site running Gadya CMS 0.8.1 or later: the last Lighthouse scores, how many things the CMS can put right by itself, and the failures that live in the templates - so the portal can see the whole fleet without opening each site.
+
 ## 0.4.1
 
 - The **Get help** button links to its own panel's page and appears only on that panel. On a site with a second Filament panel without Get help (a client area, a second brand), it no longer points at a route that does not exist there.

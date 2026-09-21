@@ -4,6 +4,8 @@ namespace Gadya\Connect\Report;
 
 use Composer\InstalledVersions;
 use Filament\Facades\Filament;
+use Gadya\Cms\Models\PageScore;
+use Gadya\Cms\Quality\Failures;
 use Gadya\Cms\Support\InstallAudit;
 use Gadya\Cms\Support\Maintenance;
 use Gadya\Connect\Models\Connection;
@@ -53,6 +55,7 @@ class ReportBuilder
             ],
             'sso' => ['enabled' => $connection?->sso_enabled ?? true],
             'errors' => ['last_day' => rescue(fn (): int => $this->errors->lastDay(), 0, report: false)],
+            'quality' => $this->quality(),
         ], fn ($section): bool => $section !== null);
     }
 
@@ -89,6 +92,50 @@ class ReportBuilder
             return [
                 'todo' => $checks->where('status', 'todo')->count(),
                 'checks' => $checks->where('status', '!=', 'ok')->values()->all(),
+            ];
+        }, null, report: false);
+    }
+
+    /**
+     * How Google's last check went, and what it found that only a
+     * developer can put right - so the portal can see the whole fleet
+     * without opening each site.
+     *
+     * @return array{checked_at: string|null, scores: array<string, int|null>, to_fix: int, for_developers: list<array<string, mixed>>}|null
+     */
+    private function quality(): ?array
+    {
+        if (! class_exists(Failures::class)) {
+            return null;
+        }
+
+        return rescue(function (): ?array {
+            $latest = PageScore::query()->latest('checked_at')->first();
+
+            if ($latest === null) {
+                return null;
+            }
+
+            $failures = app(Failures::class);
+
+            return [
+                'checked_at' => $latest->checked_at?->toIso8601String(),
+                'scores' => [
+                    'performance' => $latest->performance,
+                    'accessibility' => $latest->accessibility,
+                    'best_practices' => $latest->best_practices,
+                    'seo' => $latest->seo,
+                ],
+                'to_fix' => $failures->fixable()->count(),
+                'for_developers' => $failures->forDevelopers()
+                    ->map(fn (array $failure): array => [
+                        'id' => $failure['id'],
+                        'title' => $failure['title'],
+                        'path' => $failure['path'],
+                    ])
+                    ->take(20)
+                    ->values()
+                    ->all(),
             ];
         }, null, report: false);
     }
