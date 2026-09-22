@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+
+- The check-in carries everything Gadya CMS 0.9.0 knows about itself, from one `PortalSummary`: the last Lighthouse scores and what only code can fix, the accessibility record (score, pages checked, outstanding, remediated, the statement's address), what has drifted, unanswered enquiries with the oldest in hours, and the state of the site's backups. A site on an older CMS, or none, reports what it always did.
+
 ## 0.4.2
 
 - The check-in carries a **quality** section on a site running Gadya CMS 0.8.1 or later: the last Lighthouse scores, how many things the CMS can put right by itself, and the failures that live in the templates - so the portal can see the whole fleet without opening each site.

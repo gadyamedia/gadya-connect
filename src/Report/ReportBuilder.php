@@ -4,10 +4,9 @@ namespace Gadya\Connect\Report;
 
 use Composer\InstalledVersions;
 use Filament\Facades\Filament;
-use Gadya\Cms\Models\PageScore;
-use Gadya\Cms\Quality\Failures;
 use Gadya\Cms\Support\InstallAudit;
 use Gadya\Cms\Support\Maintenance;
+use Gadya\Cms\Support\PortalSummary;
 use Gadya\Connect\Models\Connection;
 
 /**
@@ -55,7 +54,7 @@ class ReportBuilder
             ],
             'sso' => ['enabled' => $connection?->sso_enabled ?? true],
             'errors' => ['last_day' => rescue(fn (): int => $this->errors->lastDay(), 0, report: false)],
-            'quality' => $this->quality(),
+            ...$this->cms(),
         ], fn ($section): bool => $section !== null);
     }
 
@@ -97,47 +96,20 @@ class ReportBuilder
     }
 
     /**
-     * How Google's last check went, and what it found that only a
-     * developer can put right - so the portal can see the whole fleet
-     * without opening each site.
+     * What Gadya CMS knows about itself - the last Lighthouse scores, the
+     * accessibility record, what has drifted, unanswered enquiries and the
+     * state of the backups - so the portal can show every site at a glance
+     * without opening any of them.
      *
-     * @return array{checked_at: string|null, scores: array<string, int|null>, to_fix: int, for_developers: list<array<string, mixed>>}|null
+     * @return array<string, mixed>
      */
-    private function quality(): ?array
+    private function cms(): array
     {
-        if (! class_exists(Failures::class)) {
-            return null;
+        if (! class_exists(PortalSummary::class)) {
+            return [];
         }
 
-        return rescue(function (): ?array {
-            $latest = PageScore::query()->latest('checked_at')->first();
-
-            if ($latest === null) {
-                return null;
-            }
-
-            $failures = app(Failures::class);
-
-            return [
-                'checked_at' => $latest->checked_at?->toIso8601String(),
-                'scores' => [
-                    'performance' => $latest->performance,
-                    'accessibility' => $latest->accessibility,
-                    'best_practices' => $latest->best_practices,
-                    'seo' => $latest->seo,
-                ],
-                'to_fix' => $failures->fixable()->count(),
-                'for_developers' => $failures->forDevelopers()
-                    ->map(fn (array $failure): array => [
-                        'id' => $failure['id'],
-                        'title' => $failure['title'],
-                        'path' => $failure['path'],
-                    ])
-                    ->take(20)
-                    ->values()
-                    ->all(),
-            ];
-        }, null, report: false);
+        return rescue(fn (): array => app(PortalSummary::class)->build(), [], report: false);
     }
 
     private function comingSoon(): bool
