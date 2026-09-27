@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- **Error details.** The check-in's errors section keeps `last_day` and adds `recent`: the ten loudest errors of the last day, grouped by class, message (numbers and ids taken out), file and line, each with its count and when it was first and last seen. Messages are cut to 300 characters and redacted before anything is grouped or sent: email addresses, passwords in URLs, bearer tokens and JWTs, `key=`/`secret=`/`password=`/`token=` values and long hex or base64 strings. Only the top frame is reported; stack traces, context and request data stay on the server. Daily and single log files are read from the tail only, so a huge log costs no more than a small one.
+- **Security section** in the check-in: failed sign-ins and lockouts (last hour, last day, the five busiest masked networks), admins and how many have two-factor sign-in (Filament app or email codes, Fortify; null when the users table cannot say), whether the site's `.env` can be downloaded (asked of itself at most every six hours, never from tests or localhost; `security.env_check`), debug mode in production, HTTPS and whether the application key is set.
+- **Actions from the portal** (`gadya:commands`, every minute, even in maintenance mode): the site asks the portal for queued actions and runs only those signed with its secret and still in date, then reports how each went. Built in: `report.now`, `cache.clear`, `maintenance.down` (an optional bypass secret, never a view or a redirect), `maintenance.up` and `secret.rotate`. Other packages add actions by tagging a class with `type()` and `handle()` as `gadya-connect.remote-commands`. `remote_commands.enabled` (`GADYA_CONNECT_REMOTE_COMMANDS`) and `remote_commands.except` switch them off; the portal is told why nothing ran. A command the portal sends again is answered from the first run, not run twice.
+- **Secret rotation**: `PortalClient::rotateSecret()` asks the portal for a new secret, signed with the current one, and stores it only once the portal has answered.
+- The check-in now runs in maintenance mode too, so a site that is down for maintenance still checks in.
+
 ## 0.5.0
 
 - The check-in carries everything Gadya CMS 0.9.0 knows about itself, from one `PortalSummary`: the last Lighthouse scores and what only code can fix, the accessibility record (score, pages checked, outstanding, remediated, the statement's address), what has drifted, unanswered enquiries with the oldest in hours, and the state of the site's backups. A site on an older CMS, or none, reports what it always did.

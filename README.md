@@ -8,10 +8,12 @@ Connects a Laravel site to the [Gadya Media](https://gadya.media) portal at app.
   - the Gadya CMS audit
   - updates waiting on Packagist
   - maintenance mode
-  - how many errors it logged in the last day
+  - how many errors it logged in the last day, and the ten loudest of them: class, message, file and line, how often and when. Messages are redacted first (email addresses, tokens, passwords, keys and anything that looks like a secret are blanked); no stack traces, context or request data leave the server
+  - security: failed sign-ins and lockouts in the last hour and day with the busiest networks (addresses masked to `203.0.113.x`), how many admins have two-factor sign-in (from Filament's or Fortify's columns, when the users table has them), whether the site's own `.env` can be downloaded (checked at most every six hours), debug mode in production, HTTPS and the application key
 
-  If the check-ins stop, the portal notices: that usually means the scheduler has stopped.
+  If the check-ins stop, the portal notices: that usually means the scheduler has stopped. Check-ins carry on in maintenance mode.
 - **Nothing to open up.** The site talks to the portal; the portal never reaches into the site. Every request is signed with a secret handed over once at pairing, stamped with the time, and never accepted twice.
+- **Actions from the portal.** Every minute the site asks the portal whether the Gadya team has queued anything: check in now, clear the caches, maintenance mode on (with an optional bypass secret, nothing else) or off, or a new secret. A command runs only if it is signed with the site's secret and still in date; the outcome goes back to the portal. Switch them off, or refuse single types, in the config.
 - **Get help** in the Filament admin, for everyone who can sign in: ask the Gadya team for help with screenshots attached, see each request's status, and carry on the conversation. Replies also arrive by email, and answering the email works too.
 - **One-click sign-in** from the portal as the site's own Gadya Support account: a signed pass, good once for a minute, that the client can switch off.
 - **Gadya Support page** in the Filament admin. From there you connect the site with a pairing code, check in on demand, and decide whether the Gadya team may sign in to help.
@@ -46,6 +48,7 @@ $panel->plugins([GadyaConnectPlugin::make()]);
 | --- | --- |
 | `gadya:connect {code} {--portal=}` | Pair with the portal |
 | `gadya:report` | Send a check-in now (scheduled every 5 minutes) |
+| `gadya:commands` | Run the actions the portal has queued (scheduled every minute, also in maintenance mode) |
 | `gadya:disconnect` | Forget the link |
 
 ## Configuration
@@ -60,6 +63,35 @@ php artisan vendor:publish --tag=gadya-connect-config
 | `report_every_minutes` | `5` | |
 | `schedule` | `true` | Set false to schedule `gadya:report` yourself |
 | `gate` | `null` | Who may connect and switch sign-in; falls back to `gadya-cms.settings`, then `manage-users` |
+| `security.env_check` | `true` | `GADYA_CONNECT_ENV_CHECK`. Ask for `{app.url}/.env` every six hours to be sure nobody else can |
+| `remote_commands.enabled` | `true` | `GADYA_CONNECT_REMOTE_COMMANDS`. Switched off, the site still asks and tells the portal each action was refused |
+| `remote_commands.except` | `[]` | Types to refuse, e.g. `['maintenance.down']` |
+
+## Adding actions
+
+Another package can add an action without depending on this one: any class with these two methods, tagged in the container.
+
+```php
+class RunBackup
+{
+    public function type(): string
+    {
+        return 'backup.run';
+    }
+
+    /** @return array{output: string, result: array|null} Throw to report the action failed. */
+    public function handle(array $payload): array
+    {
+        // ...
+
+        return ['output' => 'Backup finished.', 'result' => null];
+    }
+}
+
+$this->app->tag([RunBackup::class], 'gadya-connect.remote-commands');
+```
+
+The portal only queues types it knows about; the site runs only types it has a handler for.
 
 ## Licence
 
