@@ -53,7 +53,7 @@ class ReportBuilder
                 'coming_soon' => $this->comingSoon(),
             ],
             'sso' => ['enabled' => $connection?->sso_enabled ?? true],
-            'errors' => ['last_day' => rescue(fn (): int => $this->errors->lastDay(), 0, report: false)],
+            'errors' => rescue(fn (): array => $this->errors->summary(), ['last_day' => 0, 'recent' => []], report: false),
             ...$this->cms(),
         ], fn ($section): bool => $section !== null);
     }
