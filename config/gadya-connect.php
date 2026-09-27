@@ -52,6 +52,16 @@ return [
     'help_address' => env('GADYA_CONNECT_HELP_ADDRESS', 'help@support.gadya.media'),
 
     /*
+     * The check-in's security section. The site asks for its own
+     * {app.url}/.env at most every six hours to make sure nobody else can
+     * download it; switch that off here if something in front of the site
+     * objects.
+     */
+    'security' => [
+        'env_check' => env('GADYA_CONNECT_ENV_CHECK', true),
+    ],
+
+    /*
      * Seconds to wait for the portal before giving up on a check-in.
      */
     'timeout' => 15,

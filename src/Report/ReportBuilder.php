@@ -28,6 +28,7 @@ class ReportBuilder
         private readonly HealthResults $health,
         private readonly OutdatedPackages $outdated,
         private readonly ErrorCount $errors,
+        private readonly SecurityReport $security,
     ) {}
 
     /**
@@ -54,6 +55,7 @@ class ReportBuilder
             ],
             'sso' => ['enabled' => $connection?->sso_enabled ?? true],
             'errors' => rescue(fn (): array => $this->errors->summary(), ['last_day' => 0, 'recent' => []], report: false),
+            'security' => rescue(fn (): array => $this->security->build(), null, report: false),
             ...$this->cms(),
         ], fn ($section): bool => $section !== null);
     }
