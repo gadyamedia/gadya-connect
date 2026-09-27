@@ -6,6 +6,7 @@ use Gadya\Connect\Commands\CommandsCommand;
 use Gadya\Connect\Commands\ConnectCommand;
 use Gadya\Connect\Commands\DisconnectCommand;
 use Gadya\Connect\Commands\ReportCommand;
+use Gadya\Connect\Commands\UpgradeCommand;
 use Gadya\Connect\Models\Connection;
 use Gadya\Connect\Remote\RemoteCommands;
 use Gadya\Connect\Security\FailedLogins;
@@ -29,6 +30,7 @@ class GadyaConnectServiceProvider extends PackageServiceProvider
                 ReportCommand::class,
                 DisconnectCommand::class,
                 CommandsCommand::class,
+                UpgradeCommand::class,
             ]);
     }
 

@@ -3,6 +3,7 @@
 namespace Gadya\Connect\Remote;
 
 use Gadya\Connect\Remote\Handlers\ClearCache;
+use Gadya\Connect\Remote\Handlers\FinishUpgrade;
 use Gadya\Connect\Remote\Handlers\MaintenanceDown;
 use Gadya\Connect\Remote\Handlers\MaintenanceUp;
 use Gadya\Connect\Remote\Handlers\ReportNow;
@@ -24,6 +25,9 @@ use Throwable;
  *
  *     public function type(): string                 // "backup.run"
  *     public function handle(array $payload): array  // ['output' => string, 'result' => ?array]; throw to fail
+ *
+ * A handler that fails with something to show for it throws CommandFailed,
+ * whose result goes to the portal with the message.
  */
 class RemoteCommands
 {
@@ -36,6 +40,7 @@ class RemoteCommands
         MaintenanceDown::class,
         MaintenanceUp::class,
         RotateSecret::class,
+        FinishUpgrade::class,
     ];
 
     private const OUTPUT_LENGTH = 5000;
@@ -127,6 +132,8 @@ class RemoteCommands
             }
 
             $outcome = $handler->handle($payload);
+        } catch (CommandFailed $exception) {
+            return [...$this->failed($exception->getMessage() ?: $exception::class), 'result' => $exception->result];
         } catch (Throwable $exception) {
             return $this->failed($exception->getMessage() ?: $exception::class);
         }

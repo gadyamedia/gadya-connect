@@ -222,7 +222,7 @@ class RemoteCommandsTest extends TestCase
     public function test_the_built_in_actions_are_registered(): void
     {
         $this->assertSame(
-            ['report.now', 'cache.clear', 'maintenance.down', 'maintenance.up', 'secret.rotate'],
+            ['report.now', 'cache.clear', 'maintenance.down', 'maintenance.up', 'secret.rotate', 'upgrade.finish'],
             array_keys(app(RemoteCommands::class)->handlers()),
         );
     }

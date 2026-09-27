@@ -8,6 +8,8 @@ use Gadya\Cms\Support\InstallAudit;
 use Gadya\Cms\Support\Maintenance;
 use Gadya\Cms\Support\PortalSummary;
 use Gadya\Connect\Models\Connection;
+use Gadya\Connect\Upgrade\Upgrader;
+use Gadya\Connect\Upgrade\WorkflowTemplate;
 
 /**
  * The check-in: what this site is, what it runs, and how it is doing.
@@ -56,6 +58,10 @@ class ReportBuilder
             'sso' => ['enabled' => $connection?->sso_enabled ?? true],
             'errors' => rescue(fn (): array => $this->errors->summary(), ['last_day' => 0, 'recent' => []], report: false),
             'security' => rescue(fn (): array => $this->security->build(), null, report: false),
+            'upgrader' => [
+                'version' => Upgrader::version('gadya/connect'),
+                'workflow_template' => rescue(fn (): ?string => WorkflowTemplate::installed(), null, report: false),
+            ],
             ...$this->cms(),
         ], fn ($section): bool => $section !== null);
     }
