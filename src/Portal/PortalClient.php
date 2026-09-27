@@ -74,6 +74,36 @@ class PortalClient
     }
 
     /**
+     * Swaps the secret this site signs with for a new one. The request is
+     * signed with the current secret; the portal keeps accepting that one
+     * for a few minutes, so anything already on its way still arrives. The
+     * new secret is stored only once the portal has answered with it.
+     */
+    public function rotateSecret(): Connection
+    {
+        $connection = Connection::current();
+
+        if ($connection === null) {
+            throw new RuntimeException('This site is not connected to Gadya Media yet.');
+        }
+
+        $response = $this->send($connection, 'POST', '/api/connect/v1/secret');
+        $secret = $response->json('data.secret');
+
+        if (! $response->successful()) {
+            throw new RuntimeException((string) ($response->json('message') ?: 'The portal did not rotate the secret (HTTP '.$response->status().').'));
+        }
+
+        if (! is_string($secret) || strlen($secret) < 32) {
+            throw new RuntimeException('The portal did not send a usable new secret; the site keeps the one it has.');
+        }
+
+        $connection->forceFill(['secret' => $secret])->save();
+
+        return $connection;
+    }
+
+    /**
      * The support requests this person has opened from the site.
      *
      * @return list<array<string, mixed>>

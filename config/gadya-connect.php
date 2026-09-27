@@ -62,6 +62,19 @@ return [
     ],
 
     /*
+     * Actions the Gadya team can ask for from the portal: check in now,
+     * clear the caches, maintenance mode on and off, a new secret, and
+     * whatever Gadya CMS adds. The site asks the portal for them every
+     * minute and runs only commands signed with its secret. Switched off,
+     * the site still asks, and tells the portal each one was refused; list
+     * types in `except` to refuse only those (e.g. 'maintenance.down').
+     */
+    'remote_commands' => [
+        'enabled' => env('GADYA_CONNECT_REMOTE_COMMANDS', true),
+        'except' => [],
+    ],
+
+    /*
      * Seconds to wait for the portal before giving up on a check-in.
      */
     'timeout' => 15,

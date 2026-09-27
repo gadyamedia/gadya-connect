@@ -2,9 +2,12 @@
 
 namespace Gadya\Connect;
 
+use Gadya\Connect\Commands\CommandsCommand;
 use Gadya\Connect\Commands\ConnectCommand;
 use Gadya\Connect\Commands\DisconnectCommand;
 use Gadya\Connect\Commands\ReportCommand;
+use Gadya\Connect\Models\Connection;
+use Gadya\Connect\Remote\RemoteCommands;
 use Gadya\Connect\Security\FailedLogins;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Lockout;
@@ -25,7 +28,14 @@ class GadyaConnectServiceProvider extends PackageServiceProvider
                 ConnectCommand::class,
                 ReportCommand::class,
                 DisconnectCommand::class,
+                CommandsCommand::class,
             ]);
+    }
+
+    public function packageRegistered(): void
+    {
+        /* The built-in actions, found the same way as those other packages add. */
+        $this->app->tag(RemoteCommands::BUILT_IN, RemoteCommands::TAG);
     }
 
     public function packageBooted(): void
@@ -51,8 +61,17 @@ class GadyaConnectServiceProvider extends PackageServiceProvider
 
             $every = max(1, min(15, (int) config('gadya-connect.report_every_minutes', 5)));
 
+            /* A site in maintenance keeps checking in, and keeps asking for the action that brings it back. */
             $schedule->command('gadya:report')
                 ->cron("*/{$every} * * * *")
+                ->evenInMaintenanceMode()
+                ->withoutOverlapping(10)
+                ->runInBackground();
+
+            $schedule->command('gadya:commands')
+                ->everyMinute()
+                ->when(fn (): bool => Connection::current() !== null)
+                ->evenInMaintenanceMode()
                 ->withoutOverlapping(10)
                 ->runInBackground();
         });
