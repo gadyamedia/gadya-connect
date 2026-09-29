@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.0
 
 - **Upgrades that finish themselves.** `php artisan gadya:upgrade` runs the installed packages' upgrade steps, each safe to run again: `--phase=code` changes files in the repository (Gadya's update workflow runs it in CI and commits the result, then `boost:update --discover` where Boost is set up); `--phase=server`, the default, runs on the live site - `migrate --force`, the server steps, `optimize:clear` and `filament:assets`. `--json` prints what ran, what had nothing to do and what failed, with the Gadya versions; `--dry-run` only lists. Other packages add steps by tagging a class with `key()`, `description()`, `phase()`, `shouldRun()` and `run()` as `gadya-connect.upgrade-steps`.
 - **`upgrade.finish`**, an action the portal sends after a deploy: the server phase, with its outcome as the command's result. A handler that fails can now send a result too (`CommandFailed`).
