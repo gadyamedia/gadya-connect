@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.1
 
 - The check-in's `app` section carries `repository`: the `owner/name` of the site's `origin` remote, read from `.git/config` (github.com only, https or ssh, with or without `.git`; null without a `.git` directory, an origin or a GitHub one). It never fails a check-in. The portal uses it to find the site's repository by itself.
 
