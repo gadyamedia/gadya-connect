@@ -11,6 +11,7 @@ Connects a Laravel site to the [Gadya Media](https://gadya.media) portal at app.
   - how many errors it logged in the last day, and the ten loudest of them: class, message, file and line, how often and when. Messages are redacted first (email addresses, tokens, passwords, keys and anything that looks like a secret are blanked); no stack traces, context or request data leave the server
   - security: failed sign-ins and lockouts in the last hour and day with the busiest networks (addresses masked to `203.0.113.x`), how many admins have two-factor sign-in (from Filament's or Fortify's columns, when the users table has them), whether the site's own `.env` can be downloaded (checked at most every six hours), debug mode in production, HTTPS and the application key
 
+  - the GitHub repository the site was deployed from (`app.repository`, `owner/name`, read from the `origin` remote in `.git/config`; nothing is sent when there is none)
   - which update workflow the repository holds (`upgrader.workflow_template`), so the portal can offer a newer one
 
   If the check-ins stop, the portal notices: that usually means the scheduler has stopped. Check-ins carry on in maintenance mode.

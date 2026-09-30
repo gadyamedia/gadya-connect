@@ -46,6 +46,7 @@ class ReportBuilder
                 'environment' => app()->environment(),
                 'debug' => (bool) config('app.debug'),
                 'timezone' => (string) config('app.timezone'),
+                'repository' => GitRepository::origin(),
             ],
             'versions' => $this->versions(),
             'health' => ['checks' => $this->health->collect()],

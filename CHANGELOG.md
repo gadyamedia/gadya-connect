@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- The check-in's `app` section carries `repository`: the `owner/name` of the site's `origin` remote, read from `.git/config` (github.com only, https or ssh, with or without `.git`; null without a `.git` directory, an origin or a GitHub one). It never fails a check-in. The portal uses it to find the site's repository by itself.
+
 ## 0.6.0
 
 - **Upgrades that finish themselves.** `php artisan gadya:upgrade` runs the installed packages' upgrade steps, each safe to run again: `--phase=code` changes files in the repository (Gadya's update workflow runs it in CI and commits the result, then `boost:update --discover` where Boost is set up); `--phase=server`, the default, runs on the live site - `migrate --force`, the server steps, `optimize:clear` and `filament:assets`. `--json` prints what ran, what had nothing to do and what failed, with the Gadya versions; `--dry-run` only lists. Other packages add steps by tagging a class with `key()`, `description()`, `phase()`, `shouldRun()` and `run()` as `gadya-connect.upgrade-steps`.
